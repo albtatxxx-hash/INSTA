@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luma — Visual Social Feed</title>
+  
+  <!-- Tailwind CSS with Forms & Container Queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    globalThis.tailwind = globalThis.tailwind || {};
+    globalThis.tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'accent-orange': '#FF7A00',
+            'accent-magenta': '#E1306C',
+            'accent-violet': '#833AB4',
+            'like-red': '#FF3040',
+            'verified-blue': '#0095F6',
+            'success': '#16A34A',
+            'on-success': '#272727',
+            'error': '#DC2626',
+            'on-error': '#FFFFFF',
+            'light-primary': '#0F0F0F',
+            'light-on-primary': '#FFFFFF',
+            'light-secondary': '#0070D2',
+            'light-on-secondary': '#FFFFFF',
+            'light-background': '#FFFFFF',
+            'light-on-background': '#0F0F0F',
+            'light-surface': '#FFFFFF',
+            'light-surface-container-low': '#FAFAFA',
+            'light-surface-container': '#F4F4F5',
+            'light-surface-container-high': '#EFEFEF',
+            'light-on-surface': '#0F0F0F',
+            'light-on-surface-variant': '#6E6E73',
+            'light-outline': '#8E8E93',
+            'light-outline-variant': '#EFEFEF',
+            'light-scrim': '#0F0F0F',
+            'dark-primary': '#FFFFFF',
+            'dark-on-primary': '#0A0A0A',
+            'dark-secondary': '#3897F0',
+            'dark-on-secondary': '#0A0A0A',
+            'dark-background': '#0A0A0A',
+            'dark-on-background': '#F5F5F5',
+            'dark-surface': '#0A0A0A',
+            'dark-surface-container-low': '#121212',
+            'dark-surface-container': '#1A1A1A',
+            'dark-surface-container-high': '#262626',
+            'dark-on-surface': '#F5F5F5',
+            'dark-on-surface-variant': '#A1A1AA',
+            'dark-outline': '#71717A',
+            'dark-outline-variant': '#262626',
+            'dark-scrim': '#000000',
+          },
+          borderRadius: {
+            'sm': '4px',
+            'DEFAULT': '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '24px',
+            'full': '9999px',
+          },
+          spacing: {
+            'gutter-xs': '4px',
+            'gutter-sm': '8px',
+            'gutter-md': '16px',
+            'gutter-lg': '24px',
+            'gutter-xl': '32px',
+            'section': '48px',
+            'page-margin': '24px',
+          },
+          fontFamily: {
+            'display': ['"Plus Jakarta Sans"', 'sans-serif'],
+            'headline': ['"Plus Jakarta Sans"', 'sans-serif'],
+            'title': ['"Plus Jakarta Sans"', 'sans-serif'],
+            'body': ['"Inter"', 'sans-serif'],
+            'label': ['"Inter"', 'sans-serif'],
+            'mono': ['"JetBrains Mono"', 'monospace'],
+          },
+          fontSize: {
+            'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.75px', fontWeight: '700' }],
+            'display-lg-mobile': ['28px', { lineHeight: '34px', letterSpacing: '-0.5px', fontWeight: '700' }],
+            'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.4px', fontWeight: '700' }],
+            'headline-md': ['20px', { lineHeight: '28px', letterSpacing: '-0.25px', fontWeight: '600' }],
+            'title-md': ['16px', { lineHeight: '22px', letterSpacing: '-0.1px', fontWeight: '600' }],
+            'body-md': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '400' }],
+            'body-sm': ['13px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+            'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '600' }],
+            'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.1px', fontWeight: '600' }],
+            'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.2px', fontWeight: '500' }],
+            'mono-sm': ['12px', { lineHeight: '16px', letterSpacing: '0px', fontWeight: '500' }],
+          },
+          transitionDuration: {
+            'state-change': '150ms',
+            'heart-burst': '450ms',
+            'surface-enter': '240ms',
+            'surface-exit': '160ms',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Image Fallback Handler (Pre-loaded to catch any early image error) -->
+  <script>
+    window.getPlaceholderImage = function(text = 'Luma', bg = '#262626', fg = '#FAFAFA') {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800"><rect width="800" height="800" fill="${bg}"/><circle cx="400" cy="400" r="160" fill="none" stroke="${fg}" stroke-width="4" stroke-dasharray="10 10" opacity="0.3"/><text x="50%" y="48%" font-family="sans-serif" font-size="32" font-weight="600" fill="${fg}" text-anchor="middle" dominant-baseline="middle">${text}</text><text x="50%" y="54%" font-family="sans-serif" font-size="16" fill="${fg}" opacity="0.6" text-anchor="middle" dominant-baseline="middle">Luma Visual Platform</text></svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    };
+    window.handleImageError = function(img, text = 'Luma') {
+      if (!img.dataset.fallbackApplied) {
+        img.dataset.fallbackApplied = 'true';
+        img.src = window.getPlaceholderImage(text);
+      }
+    };
+  </script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light-background dark:bg-dark-background text-light-on-background dark:text-dark-on-background font-body antialiased selection:bg-accent-magenta/20 pb-24 lg:pb-0">
+
+  <!-- App Shell -->
+  <div class="min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Mobile / Tablet Sticky Glassmorphic Top Header -->
+    <header class="lg:hidden sticky top-0 z-30 flex items-center justify-between px-gutter-md py-gutter-sm border-b border-light-outline-variant dark:border-dark-outline-variant bg-light-surface/85 dark:bg-dark-surface/85 backdrop-blur-md">
+      <a href="index.html" data-link="home" class="flex items-center gap-gutter-sm rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light-secondary dark:focus-visible:ring-dark-secondary">
+        <span class="w-7 h-7 rounded-md bg-gradient-to-tr from-accent-orange via-accent-magenta to-accent-violet flex items-center justify-center text-light-on-primary">
+          <span class="material-symbols-outlined text-title-md">circle</span>
+        </span>
+        <span class="font-headline text-headline-md text-light-on-surface dark:text-dark-on-surface">Luma</span>
+      </a>
+
+      <div class="flex items-center gap-gutter-sm">
+        <button type="button" onclick="toggleTheme()" aria-label="Toggle color theme" class="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change">
+          <span id="mobile-theme-icon" class="material-symbols-outlined text-headline-md">dark_mode</span>
+        </button>
+        <button type="button" onclick="showToast('You are all caught up on notifications')" aria-label="Notifications" class="relative inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change">
+          <span class="material-symbols-outlined text-headline-md">favorite</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gradient-to-tr from-accent-orange via-accent-magenta to-accent-violet"></span>
+        </button>
+        <button type="button" onclick="showToast('Direct Messages: 3 unread conversations')" aria-label="Direct messages" class="relative inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change">
+          <span class="material-symbols-outlined text-headline-md">send</span>
+          <span class="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-accent-violet text-light-on-primary font-label text-label-sm flex items-center justify-center tabular-nums">3</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Desktop Fixed Left Sidebar (240px) -->
+    <aside class="hidden lg:flex lg:flex-col lg:justify-between lg:fixed lg:inset-y-0 lg:left-0 lg:w-[240px] min-h-screen border-r border-light-outline-variant dark:border-dark-outline-variant bg-light-surface dark:bg-dark-surface px-gutter-md py-gutter-lg z-30">
+      <div class="flex flex-col gap-gutter-lg">
+        <!-- Brand Logo -->
+        <a href="index.html" data-link="home" class="flex items-center gap-gutter-sm px-gutter-sm py-gutter-xs text-left rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-light-secondary dark:focus-visible:ring-dark-secondary group">
+          <span class="w-8 h-8 rounded-md bg-gradient-to-tr from-accent-orange via-accent-magenta to-accent-violet flex items-center justify-center text-light-on-primary transition-transform duration-state-change group-hover:scale-105">
+            <span class="material-symbols-outlined text-headline-md">circle</span>
+          </span>
+          <span class="font-headline text-headline-lg text-light-on-surface dark:text-dark-on-surface">Luma</span>
+        </a>
+
+        <!-- Primary Navigation Links -->
+        <nav aria-label="Primary navigation" class="flex flex-col gap-gutter-xs">
+          <button type="button" data-nav="home" onclick="switchTab('home')" class="nav-item flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded bg-light-surface-container-low dark:bg-dark-surface-container-low hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left font-semibold">
+            <span class="material-symbols-outlined text-headline-md icon-filled">home</span>
+            <span class="font-label text-label-lg">Home</span>
+          </button>
+
+          <button type="button" data-nav="search" onclick="focusSearch()" class="nav-item flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <span class="material-symbols-outlined text-headline-md">search</span>
+            <span class="font-body text-body-md">Search</span>
+          </button>
+
+          <button type="button" data-nav="explore" onclick="switchTab('explore')" class="nav-item flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <span class="material-symbols-outlined text-headline-md">explore</span>
+            <span class="font-body text-body-md">Explore</span>
+          </button>
+
+          <button type="button" data-nav="reels" onclick="switchTab('reels')" class="nav-item flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <span class="material-symbols-outlined text-headline-md">smart_display</span>
+            <span class="font-body text-body-md">Reels</span>
+          </button>
+
+          <button type="button" onclick="showToast('Messages: 3 active conversations')" class="nav-item flex items-center justify-between px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <span class="flex items-center gap-gutter-md">
+              <span class="material-symbols-outlined text-headline-md">chat_bubble</span>
+              <span class="font-body text-body-md">Messages</span>
+            </span>
+            <span class="min-w-4 h-5 px-1.5 rounded-full bg-accent-violet text-light-on-primary font-label text-label-sm flex items-center justify-center tabular-nums">3</span>
+          </button>
+
+          <button type="button" onclick="showToast('Notifications: Elena Rostova liked your post')" class="nav-item flex items-center justify-between px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <span class="flex items-center gap-gutter-md">
+              <span class="material-symbols-outlined text-headline-md">favorite</span>
+              <span class="font-body text-body-md">Notifications</span>
+            </span>
+            <span class="w-2 h-2 rounded-full bg-gradient-to-tr from-accent-orange via-accent-magenta to-accent-violet"></span>
+          </button>
+
+          <!-- Create Post Button -->
+          <button type="button" onclick="openCreateModal()" class="mt-gutter-sm inline-flex items-center gap-gutter-sm px-gutter-md py-gutter-sm rounded bg-light-primary dark:bg-dark-primary text-light-on-primary dark:text-dark-on-primary font-label text-label-lg transition-transform duration-state-change ease-state-change hover:opacity-90 active:scale-95 shadow-sm">
+            <span class="material-symbols-outlined text-headline-md" aria-hidden="true">add_box</span>
+            <span>Create</span>
+          </button>
+
+          <!-- Profile Nav Link -->
+          <a href="profile.html" data-link="profile" class="nav-item mt-gutter-xs flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change text-left">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Maya Lin" onerror="handleImageError(this, 'Maya Lin')" class="user-avatar-sync w-6 h-6 rounded-full object-cover border border-light-outline-variant dark:border-dark-outline-variant">
+            <span class="font-body text-body-md">Profile</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- More / Settings Bottom Menu -->
+      <div class="relative">
+        <div id="more-menu" class="hidden absolute bottom-12 left-0 w-full rounded-md border border-light-outline-variant dark:border-dark-outline-variant bg-light-surface/95 dark:bg-dark-surface-container-low/95 backdrop-blur-md p-gutter-xs shadow-lg flex flex-col gap-gutter-xs z-50">
+          <button type="button" onclick="toggleTheme()" class="flex items-center justify-between px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change">
+            <span class="flex items-center gap-gutter-sm">
+              <span id="desktop-theme-icon" class="material-symbols-outlined text-title-md">dark_mode</span>
+              <span id="desktop-theme-label" class="font-body text-body-sm">Dark mode</span>
+            </span>
+          </button>
+          <a href="profile.html" data-link="profile" class="flex items-center gap-gutter-sm px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change font-body text-body-sm">
+            <span class="material-symbols-outlined text-title-md">person</span>
+            <span>View Profile</span>
+          </a>
+          <button type="button" onclick="if(confirm('Reset sample demo posts?')){window.LumaStore.resetToDemo(); showToast('Demo data restored!');}" class="flex items-center gap-gutter-sm px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change font-body text-body-sm">
+            <span class="material-symbols-outlined text-title-md">restart_alt</span>
+            <span>Reset Demo Data</span>
+          </button>
+          <button type="button" onclick="if(confirm('Clear all posts for an empty feed?')){window.LumaStore.clearAllPosts(); showToast('Feed cleared!');}" class="flex items-center gap-gutter-sm px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container dark:hover:bg-dark-surface-container text-error transition-colors duration-state-change font-body text-body-sm">
+            <span class="material-symbols-outlined text-title-md">delete_sweep</span>
+            <span>Clear All Posts</span>
+          </button>
+        </div>
+
+        <button type="button" onclick="toggleMoreMenu()" class="w-full flex items-center gap-gutter-md px-gutter-sm py-gutter-sm rounded hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface transition-colors duration-state-change">
+          <span class="material-symbols-outlined text-headline-md">menu</span>
+          <span class="font-body text-body-md">More</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Scrollable Center Content Area -->
+    <div class="flex-1 lg:pl-[240px] flex justify-center">
+      <div class="w-full max-w-[1020px] px-gutter-md sm:px-gutter-lg pt-gutter-lg flex flex-col xl:flex-row gap-gutter-xl items-start justify-center">
+
+        <!-- Feed Center Column (max-w-[630px]) -->
+        <main class="w-full max-w-[630px] flex flex-col gap-gutter-lg">
+
+          <!-- TAB 1: HOME FEED -->
+          <section id="tab-home" class="flex flex-col gap-gutter-lg">
+            
+            <!-- Stories Row (Horizontal Carousel) -->
+            <section aria-label="Stories" class="border border-light-outline-variant dark:border-dark-outline-variant rounded-md bg-light-surface dark:bg-dark-surface p-gutter-md overflow-hidden">
+              <div id="stories-carousel" class="flex items-center gap-gutter-md overflow-x-auto no-scrollbar scroll-smooth">
+                <!-- Rendered dynamically by feed.js -->
+              </div>
+            </section>
+
+            <!-- Search Drawer Filter (revealed when search is pressed) -->
+            <div id="search-drawer" class="hidden border border-light-outline-variant dark:border-dark-outline-variant rounded-md bg-light-surface dark:bg-dark-surface p-gutter-md flex items-center gap-gutter-sm">
+              <span class="material-symbols-outlined text-headline-md text-light-on-surface-variant dark:text-dark-on-surface-variant">search</span>
+              <input
+                id="feed-search-input"
+                type="text"
+                placeholder="Search captions, tags, or creators..."
+                oninput="handleFeedSearch(event)"
+                class="flex-1 bg-transparent border-0 p-0 font-body text-body-md text-light-on-surface dark:text-dark-on-surface placeholder:text-light-on-surface-variant dark:placeholder:text-dark-on-surface-variant focus:ring-0 focus:outline-none"
+              >
+              <button type="button" onclick="document.getElementById('search-drawer').classList.add('hidden'); document.getElementById('feed-search-input').value=''; renderFeed();" class="p-1 rounded-full text-light-on-surface-variant dark:text-dark-on-surface-variant hover:bg-light-surface-container dark:hover:bg-dark-surface-container">
+                <span class="material-symbols-outlined text-title-md">close</span>
+              </button>
+            </div>
+
+            <!-- Feed Posts Stream -->
+            <div id="feed-posts" class="flex flex-col gap-gutter-lg">
+              <!-- Rendered dynamically by feed.js -->
+            </div>
+          </section>
+
+          <!-- TAB 2: EXPLORE GRID -->
+          <section id="tab-explore" class="hidden flex flex-col gap-gutter-md">
+            <!-- Category Pills -->
+            <div class="flex items-center gap-gutter-xs overflow-x-auto no-scrollbar pb-gutter-xs">
+              <button type="button" data-explore-cat="all" onclick="filterExplore('all')" class="explore-pill px-gutter-md py-gutter-xs rounded-full bg-light-primary dark:bg-dark-primary text-light-on-primary dark:text-dark-on-primary font-label text-label-md">All</button>
+              <button type="button" data-explore-cat="architecture" onclick="filterExplore('architecture')" class="explore-pill px-gutter-md py-gutter-xs rounded-full bg-light-surface-container dark:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface font-label text-label-md">Architecture</button>
+              <button type="button" data-explore-cat="travel" onclick="filterExplore('travel')" class="explore-pill px-gutter-md py-gutter-xs rounded-full bg-light-surface-container dark:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface font-label text-label-md">Travel</button>
+              <button type="button" data-explore-cat="craft" onclick="filterExplore('craft')" class="explore-pill px-gutter-md py-gutter-xs rounded-full bg-light-surface-container dark:bg-dark-surface-container text-light-on-surface dark:text-dark-on-surface font-label text-label-md">Craft</button>
+            </div>
+
+            <!-- Explore Media Grid -->
+            <div id="explore-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-gutter-xs sm:gap-gutter-sm">
+              <!-- Rendered dynamically by feed.js -->
+            </div>
+          </section>
+
+          <!-- TAB 3: REELS VIEW -->
+          <section id="tab-reels" class="hidden flex flex-col items-center gap-gutter-lg pb-12">
+            <div class="relative w-full max-w-sm aspect-[9/16] rounded-xl overflow-hidden bg-dark-surface shadow-2xl border border-light-outline-variant dark:border-dark-outline-variant">
+              <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1000&auto=format&fit=crop&q=80" alt="Amalfi swell study" onerror="handleImageError(this, 'Reel')" class="w-full h-full object-cover">
+              
+              <div class="absolute inset-0 bg-gradient-to-b from-dark-scrim/40 via-transparent to-dark-scrim/80 flex flex-col justify-between p-gutter-md text-light-on-primary">
+                <div class="flex items-center justify-between">
+                  <span class="font-headline text-headline-md font-bold drop-shadow">Reels</span>
+                  <button type="button" onclick="showToast('Reels audio enabled')" class="p-2 rounded-full bg-dark-scrim/60 backdrop-blur">
+                    <span class="material-symbols-outlined text-title-md">volume_up</span>
+                  </button>
+                </div>
+
+                <div class="flex items-end justify-between">
+                  <div class="flex flex-col gap-2 max-w-[70%]">
+                    <a href="profile.html" class="flex items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Maya Lin" onerror="handleImageError(this, 'Maya Lin')" class="user-avatar-sync w-8 h-8 rounded-full object-cover ring-2 ring-accent-orange">
+                      <span class="font-label text-label-md font-semibold drop-shadow">maya.lin</span>
+                    </a>
+                    <p class="font-body text-body-sm drop-shadow">Amalfi coast turquoise swells in 35mm motion. Sound on.</p>
+                  </div>
+
+                  <div class="flex flex-col items-center gap-4">
+                    <button type="button" onclick="showToast('Liked reel')" class="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform">
+                      <span class="material-symbols-outlined text-headline-md icon-filled text-like-red">favorite</span>
+                      <span class="font-label text-label-sm tabular-nums">4.1k</span>
+                    </button>
+                    <button type="button" onclick="showToast('Showing comments')" class="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform">
+                      <span class="material-symbols-outlined text-headline-md">chat_bubble</span>
+                      <span class="font-label text-label-sm tabular-nums">112</span>
+                    </button>
+                    <button type="button" onclick="showToast('Reel link copied')" class="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform">
+                      <span class="material-symbols-outlined text-headline-md">send</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </main>
+
+        <!-- Desktop Right Sidebar (320px) -->
+        <aside class="hidden xl:flex xl:flex-col gap-gutter-lg w-[320px] shrink-0 sticky top-6">
+          <!-- Current User Mini-Profile Card -->
+          <div class="flex items-center justify-between gap-gutter-md p-gutter-sm rounded-lg hover:bg-light-surface-container-low dark:hover:bg-dark-surface-container-low transition-colors">
+            <a href="profile.html" data-link="profile" class="flex items-center gap-gutter-sm group">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Maya Lin" onerror="handleImageError(this, 'Maya Lin')" class="user-avatar-sync w-12 h-12 rounded-full object-cover border border-light-outline-variant dark:border-dark-outline-variant transition-transform group-hover:scale-105">
+              <div>
+                <span class="user-username-sync font-label text-label-lg text-light-on-surface dark:text-dark-on-surface font-semibold group-hover:underline block">maya.lin</span>
+                <p class="user-name-sync font-body text-body-sm text-light-on-surface-variant dark:text-dark-on-surface-variant">Maya Lin</p>
+              </div>
+            </a>
+            <a href="profile.html" data-link="profile" class="font-label text-label-md text-light-secondary dark:text-dark-secondary hover:opacity-80 transition-opacity">
+              Profile
+            </a>
+          </div>
+
+          <!-- Suggested for You -->
+          <div class="flex flex-col gap-gutter-md">
+            <div class="flex items-center justify-between">
+              <h2 class="font-label text-label-lg text-light-on-surface-variant dark:text-dark-on-surface-variant">Suggested for you</h2>
+              <button type="button" onclick="switchTab('explore')" class="font-label text-label-md text-light-on-surface dark:text-dark-on-surface hover:opacity-70">
+                See All
+              </button>
+            </div>
+
+            <div class="flex flex-col gap-gutter-sm">
+              <!-- Suggestion 1 -->
+              <article class="flex items-center justify-between gap-gutter-sm py-gutter-xs">
+                <div class="flex items-center gap-gutter-sm min-w-0">
+                  <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80" alt="Elena Rostova" onerror="handleImageError(this, 'Elena Rostova')" class="w-9 h-9 rounded-full object-cover shrink-0">
+                  <div class="min-w-0">
+                    <p class="font-label text-label-md text-light-on-surface dark:text-dark-on-surface truncate font-semibold">elena.rostova</p>
+                    <p class="font-body text-label-sm text-light-on-surface-variant dark:text-dark-on-surface-variant truncate">Followed by marcus.chen</p>
+                  </div>
+                </div>
+                <button type="button" onclick="toggleFollowUser(this)" class="font-label text-label-md text-light-secondary dark:text-dark-secondary hover:opacity-80 font-semibold shrink-0">
+                  Follow
+                </button>
+              </article>
+
+              <!-- Suggestion 2 -->
+              <article class="flex items-center justify-between gap-gutter-sm py-gutter-xs">
+                <div class="flex items-center gap-gutter-sm min-w-0">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80" alt="Marcus Chen" onerror="handleImageError(this, 'Marcus Chen')" class="w-9 h-9 rounded-full object-cover shrink-0">
+                  <div class="min-w-0">
+                    <p class="font-label text-label-md text-light-on-surface dark:text-dark-on-surface truncate font-semibold">marcus.chen</p>
+                    <p class="font-body text-label-sm text-light-on-surface-variant dark:text-dark-on-surface-variant truncate">Architect · Zurich</p>
+                  </div>
+                </div>
+                <button type="button" onclick="toggleFollowUser(this)" class="font-label text-label-md text-light-secondary dark:text-dark-secondary hover:opacity-80 font-semibold shrink-0">
+                  Follow
+                </button>
+              </article>
+
+              <!-- Suggestion 3 -->
+              <article class="flex items-center justify-between gap-gutter-sm py-gutter-xs">
+                <div class="flex items-center gap-gutter-sm min-w-0">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80" alt="Kai Takahashi" onerror="handleImageError(this, 'Kai Takahashi')" class="w-9 h-9 rounded-full object-cover shrink-0">
+                  <div class="min-w-0">
+                    <p class="font-label text-label-md text-light-on-surface dark:text-dark-on-surface truncate font-semibold">kai.takahashi</p>
+                    <p class="font-body text-label-sm text-light-on-surface-variant dark:text-dark-on-surface-variant truncate">Tokyo 35mm film</p>
+                  </div>
+                </div>
+                <button type="button" onclick="toggleFollowUser(this)" class="font-label text-label-md text-light-secondary dark:text-dark-secondary hover:opacity-80 font-semibold shrink-0">
+                  Follow
+                </button>
+              </article>
+            </div>
+          </div>
+
+          <!-- Footer Information -->
+          <footer class="mt-gutter-lg flex flex-col gap-gutter-xs text-light-on-surface-variant dark:text-dark-on-surface-variant">
+            <p class="font-label text-label-sm leading-relaxed">
+              About · Help · Press · API · Jobs · Privacy · Terms · Locations
+            </p>
+            <p class="font-label text-label-sm">© 2026 LUMA VISUAL PLATFORM</p>
+          </footer>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- Mobile / Tablet Bottom Fixed Glassmorphic Navigation Bar -->
+    <nav aria-label="Mobile navigation" class="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-light-outline-variant dark:border-dark-outline-variant bg-light-surface/85 dark:bg-dark-surface/85 backdrop-blur-md px-gutter-md py-gutter-sm flex items-center justify-around">
+      <button type="button" data-nav="home" onclick="switchTab('home')" aria-label="Home" class="p-gutter-xs text-light-on-surface dark:text-dark-on-surface">
+        <span class="material-symbols-outlined text-headline-md icon-filled">home</span>
+      </button>
+      <button type="button" data-nav="explore" onclick="switchTab('explore')" aria-label="Explore" class="p-gutter-xs text-light-on-surface dark:text-dark-on-surface">
+        <span class="material-symbols-outlined text-headline-md">explore</span>
+      </button>
+      <button type="button" onclick="openCreateModal()" aria-label="Create post" class="p-gutter-xs text-light-on-surface dark:text-dark-on-surface">
+        <span class="material-symbols-outlined text-headline-md">add_box</span>
+      </button>
+      <button type="button" data-nav="reels" onclick="switchTab('reels')" aria-label="Reels" class="p-gutter-xs text-light-on-surface dark:text-dark-on-surface">
+        <span class="material-symbols-outlined text-headline-md">smart_display</span>
+      </button>
+      <a href="profile.html" data-link="profile" aria-label="Profile" class="p-gutter-xs">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Profile" onerror="handleImageError(this, 'Profile')" class="user-avatar-sync w-7 h-7 rounded-full object-cover border border-light-outline-variant dark:border-dark-outline-variant">
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Create Post Modal (Glassmorphic Dialog) -->
+  <dialog id="create-post-modal" aria-labelledby="create-modal-title" class="rounded-lg border border-light-outline-variant dark:border-dark-outline-variant bg-light-surface dark:bg-dark-surface-container-low text-light-on-surface dark:text-dark-on-surface p-0 w-[94vw] max-w-2xl shadow-2xl backdrop:bg-light-scrim/60 backdrop:backdrop-blur-sm">
+    <header class="flex items-center justify-between px-gutter-md py-gutter-sm border-b border-light-outline-variant dark:border-dark-outline-variant">
+      <h2 id="create-modal-title" class="font-title text-title-md font-bold">Create new post</h2>
+      <button type="button" onclick="closeCreateModal()" aria-label="Close dialog" class="p-gutter-xs rounded-full hover:bg-light-surface-container dark:hover:bg-dark-surface-container">
+        <span class="material-symbols-outlined text-headline-md">close</span>
+      </button>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <!-- Left: Drag & Drop / Preview + Aspect Ratio + Filter Presets -->
+      <div class="p-gutter-md bg-light-surface-container-low dark:bg-dark-surface-container border-b md:border-b-0 md:border-r border-light-outline-variant dark:border-dark-outline-variant flex flex-col gap-gutter-md">
+        <div id="drop-zone" ondragover="event.preventDefault(); this.classList.add('border-light-secondary')" ondragleave="this.classList.remove('border-light-secondary')" ondrop="handleDrop(event)" class="relative w-full aspect-square rounded-md border-2 border-dashed border-light-outline-variant dark:border-dark-outline-variant bg-light-surface dark:bg-dark-surface-container-low flex flex-col items-center justify-center overflow-hidden">
+          <img id="create-preview-img" src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=900&auto=format&fit=crop&q=80" alt="New post preview" onerror="handleImageError(this, 'Preview')" class="w-full h-full object-cover transition-all duration-state-change">
+        </div>
+
+        <!-- Aspect Ratio & File Upload -->
+        <div class="flex items-center justify-between gap-gutter-sm">
+          <div class="flex items-center gap-gutter-xs">
+            <button type="button" data-aspect="aspect-square" onclick="setPreviewRatio('aspect-square')" class="aspect-btn px-gutter-sm py-1 rounded bg-light-primary dark:bg-dark-primary text-light-on-primary dark:text-dark-on-primary font-label text-label-sm">1:1</button>
+            <button type="button" data-aspect="aspect-[4/5]" onclick="setPreviewRatio('aspect-[4/5]')" class="aspect-btn px-gutter-sm py-1 rounded bg-light-surface-container-high dark:bg-dark-surface-container-high font-label text-label-sm">4:5</button>
+            <button type="button" data-aspect="aspect-video" onclick="setPreviewRatio('aspect-video')" class="aspect-btn px-gutter-sm py-1 rounded bg-light-surface-container-high dark:bg-dark-surface-container-high font-label text-label-sm">16:9</button>
+          </div>
+          <label class="cursor-pointer px-gutter-sm py-1 rounded bg-light-primary dark:bg-dark-primary text-light-on-primary dark:text-dark-on-primary font-label text-label-sm flex items-center gap-1 hover:opacity-90">
+            <span class="material-symbols-outlined text-sm">upload</span>
+            Upload file
+            <input type="file" accept="image/*" class="hidden" onchange="handleFileInput(event)">
+          </label>
+        </div>
+
+        <!-- Filter Presets -->
+        <div class="flex flex-col gap-1">
+          <span class="font-label text-label-sm text-light-on-surface-variant dark:text-dark-on-surface-variant">Filters</span>
+          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            <button type="button" data-filter="none" onclick="setPreviewFilter('none')" class="filter-btn text-xs px-2.5 py-1 rounded-full border border-light-outline-variant dark:border-dark-outline-variant font-label ring-2 ring-light-primary dark:ring-dark-primary">Normal</button>
+            <button type="button" data-filter="sepia(0.3) contrast(1.08) saturate(1.2)" onclick="setPreviewFilter('sepia(0.3) contrast(1.08) saturate(1.2)')" class="filter-btn text-xs px-2.5 py-1 rounded-full border border-light-outline-variant dark:border-dark-outline-variant font-label">Warm</button>
+            <button type="button" data-filter="grayscale(1) contrast(1.15)" onclick="setPreviewFilter('grayscale(1) contrast(1.15)')" class="filter-btn text-xs px-2.5 py-1 rounded-full border border-light-outline-variant dark:border-dark-outline-variant font-label">Mono</button>
+            <button type="button" data-filter="contrast(0.9) brightness(1.08) saturate(0.8)" onclick="setPreviewFilter('contrast(0.9) brightness(1.08) saturate(0.8)')" class="filter-btn text-xs px-2.5 py-1 rounded-full border border-light-outline-variant dark:border-dark-outline-variant font-label">Fade</button>
+            <button type="button" data-filter="contrast(1.2) saturate(1.35)" onclick="setPreviewFilter('contrast(1.2) saturate(1.35)')" class="filter-btn text-xs px-2.5 py-1 rounded-full border border-light-outline-variant dark:border-dark-outline-variant font-label">Vivid</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Caption, Location & Publish -->
+      <div class="p-gutter-md flex flex-col justify-between gap-gutter-md">
+        <div class="flex flex-col gap-gutter-md">
+          <div class="flex items-center gap-gutter-sm">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Maya Lin" onerror="handleImageError(this, 'Maya Lin')" class="user-avatar-sync w-8 h-8 rounded-full object-cover">
+            <span class="user-username-sync font-label text-label-md font-semibold">maya.lin</span>
+          </div>
+          <textarea id="new-post-caption" rows="5" placeholder="Write an inspiring caption..." class="w-full rounded border border-light-outline-variant dark:border-dark-outline-variant bg-light-surface-container-low dark:bg-dark-surface-container p-gutter-sm font-body text-body-md text-light-on-surface dark:text-dark-on-surface placeholder:text-light-on-surface-variant dark:placeholder:text-dark-on-surface-variant focus:ring-1 focus:ring-light-secondary dark:focus:ring-dark-secondary"></textarea>
+          <div class="flex items-center gap-gutter-sm border-b border-light-outline-variant dark:border-dark-outline-variant pb-gutter-sm">
+            <span class="material-symbols-outlined text-title-md text-light-on-surface-variant dark:text-dark-on-surface-variant">location_on</span>
+            <input id="new-post-location" type="text" placeholder="Add location (e.g. Kyoto, Japan)" class="w-full bg-transparent border-0 p-0 font-body text-body-md text-light-on-surface dark:text-dark-on-surface placeholder:text-light-on-surface-variant dark:placeholder:text-dark-on-surface-variant focus:ring-0 focus:outline-none">
+          </div>
+        </div>
+
+        <footer class="flex items-center justify-end gap-gutter-sm pt-gutter-sm border-t border-light-outline-variant dark:border-dark-outline-variant">
+          <button type="button" onclick="closeCreateModal()" class="px-gutter-md py-gutter-sm rounded bg-light-surface-container-high dark:bg-dark-surface-container-high font-label text-label-lg">
+            Cancel
+          </button>
+          <button type="button" onclick="publishNewPost()" class="px-gutter-md py-gutter-sm rounded bg-light-primary dark:bg-dark-primary text-light-on-primary dark:text-dark-on-primary font-label text-label-lg hover:opacity-90 font-semibold shadow-sm">
+            Share Post
+          </button>
+        </footer>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Story Viewer Modal -->
+  <dialog id="story-modal" class="rounded-lg border border-dark-outline-variant bg-dark-surface text-dark-on-surface p-0 w-[92vw] max-w-sm shadow-2xl backdrop:bg-dark-scrim/80 backdrop:backdrop-blur-md overflow-hidden">
+    <div class="relative aspect-[9/16] w-full">
+      <img id="story-modal-img" src="" alt="Story preview" onerror="handleImageError(this, 'Story')" class="w-full h-full object-cover">
+      <div class="absolute inset-x-0 top-0 p-gutter-md bg-gradient-to-b from-dark-scrim/80 via-dark-scrim/30 to-transparent flex flex-col gap-gutter-sm">
+        <div class="w-full h-1 rounded-full bg-dark-on-surface/30 overflow-hidden">
+          <div id="story-modal-progress" class="h-full bg-dark-primary rounded-full transition-all duration-[4500ms] ease-linear" style="width: 0%;"></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-gutter-sm">
+            <img id="story-modal-avatar" src="" alt="" onerror="handleImageError(this, 'User')" class="w-8 h-8 rounded-full object-cover border border-white/20">
+            <span id="story-modal-user" class="font-label text-label-lg text-dark-on-surface font-semibold"></span>
+          </div>
+          <button type="button" onclick="closeStoryViewer()" aria-label="Close story" class="p-1 rounded-full text-dark-on-surface hover:bg-dark-surface-container/60">
+            <span class="material-symbols-outlined text-title-md">close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Subtle Floating Toast Banner -->
+  <div id="toast-banner" class="pointer-events-none opacity-0 transition-opacity duration-surface-enter fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 z-50 px-gutter-md py-gutter-sm rounded-full bg-light-primary/95 dark:bg-dark-surface-container-high/95 backdrop-blur-md text-light-on-primary dark:text-dark-on-surface font-label text-label-md shadow-xl">
+    Action completed
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/feed.js"></script>
+  <!-- Firebase Cloud Sync & Analytics -->
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

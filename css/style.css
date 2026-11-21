@@ -1,0 +1,97 @@
+/* Luma Design System - Custom Styles & Animations */
+
+/* Material Symbols configuration */
+.material-symbols-outlined, 
+.material-symbols-rounded, 
+.material-symbols-sharp, 
+.material-icons {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1 !important;
+  box-sizing: content-box;
+  overflow: hidden;
+  white-space: nowrap;
+  direction: ltr;
+  vertical-align: middle;
+  font-feature-settings: 'liga';
+}
+
+.icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Hide scrollbars but keep scrolling enabled */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Heart burst animation for double-tap */
+@keyframes heartPop {
+  0% { transform: scale(0.35); opacity: 0; }
+  35% { transform: scale(1.25); opacity: 1; }
+  70% { transform: scale(0.95); opacity: 1; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+
+.animate-heart-burst {
+  animation: heartPop 700ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Shimmer pulse for skeletons */
+@keyframes shimmer {
+  0% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.45; }
+}
+
+.skeleton-pulse {
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Story Ring Gradient */
+.story-ring-active {
+  background: linear-gradient(45deg, #FF7A00 0%, #E1306C 50%, #833AB4 100%);
+}
+
+.story-ring-seen {
+  background-color: #8E8E93;
+}
+
+/* Photo Filter Presets */
+.filter-normal { filter: none; }
+.filter-warm { filter: sepia(0.3) contrast(1.08) saturate(1.2); }
+.filter-mono { filter: grayscale(1) contrast(1.15); }
+.filter-fade { filter: contrast(0.9) brightness(1.08) saturate(0.8); }
+.filter-cool { filter: hue-rotate(18deg) contrast(1.05) saturate(1.1); }
+.filter-vivid { filter: contrast(1.2) saturate(1.35); }
+
+/* Glassmorphism helpers */
+.glass-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Smooth transitions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom Scrollbar for desktop modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(142, 142, 147, 0.3);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 142, 147, 0.5);
+}
